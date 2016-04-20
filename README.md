@@ -11,11 +11,13 @@ Normally the FPB is required by the debugger during software development. The FP
 For a flash patch to be possible in an in-the-field product, a few steps must be taken during development.
 
 * A small section in Code FLASH must be reserved for the FPB setup routine, fpb_setup(), as well as the patched code.
-* A small (8 byte) section in RAM must be reserved to be used as the patch table.
-* fpb_setup() must be unconditionally called by the application's startup code. As long as a flash patch is not required fpb_setup() will just return without doing anything. (Note there are options for this step).
+* A small (32 byte) section in RAM must be reserved to be used as the patch table.
+* fpb_setup() must be unconditionally called by the application's startup code. As long as a flash patch is not required fpb_setup() will just return without doing anything (note there are options for this step).
 
-To illustrate these requirements imagine this example: A product has been developed so that it adheres to these requirements. It is shipped and is operating in-the-field. A bug is discovered in buggy_function(). After sh*tting themselves, the developers fix the function and call it fixed_function(). They compile fixed_function() and the setup routine that will configure the FPB to redirect buggy_function() to fixed_function(), and they store this binary in the device's memory in the section of Code FLASH that was reserved. The device is restarted and this time the call to fpb_setup() configures the FPB for this patch. Now all calls to buggy_function() are redirected to fixed_function().
+To illustrate these requirements imagine this example: A product has been developed and it follows the above requirements. It is shipped and is operating in-the-field. A bug is discovered in buggy_function(). The developers fix the function and call it fixed_function(). They compile fixed_function() and the setup routine that will configure the FPB to redirect buggy_function() to fixed_function(), and they store this binary in the device's memory in the section of Code FLASH that was reserved for the FPB during development. The device is restarted and now the call to fpb_setup() configures the FPB for this patch. All calls to buggy_function() are redirected to fixed_function().
 
 #The example
+The example in this repo is simple, but similar to a real world scenario. We reserve the last page in Code FLASH (0x7F000-0x80000) for fpb_setup() and any patched code. We reserve 32 bytes in RAM (0x20007000-0x20007010) for our patch table. We define fpb_setup() and 'fixed_function()' which is turn_led_on() in our example in fpb_lib.c which is placed at 0x7F000. fpb_setup() configures the FPB unit to replace all calls to turn_led_off() with turn_led_on(). main() calls fpb_setup() and instead of all LEDs being OFF after the program executes, LEDs 1-3 are turned ON.
 
-
+#The library
+This library is not complete or fully tested. It is provided as is and will help you get started. Feel free to create issues or make pull requests.
