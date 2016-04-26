@@ -1,4 +1,4 @@
-# nrf52_flash_patch
+# nrf52-flash-patch
 This repo contains a Flash Patch library and an example demonstrating it's use on Nordic Semiconductor's nRF52 Series Device.
 
 #Why is the Flash Patch and Breakpoint unit (FPB) useful?
